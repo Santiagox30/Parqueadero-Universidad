@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Parqueadero</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef2f5;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form, table {
+      background-color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    button, select, input {
+      padding: 8px;
+      margin: 5px 5px 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .acciones a {
+      margin: 0 5px;
+      text-decoration: none;
+      color: #0052cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gestión de Parqueadero</h1>
+
+  <form method="POST" action="/ingresar">
+    <label>Nombre:</label>
+    <input type="text" name="nombre" required>
+
+    <label>Apellido:</label>
+    <input type="text" name="apellido" required>
+
+    <label>Placa:</label>
+    <input type="text" name="placa" placeholder="(opcional para bicicleta)">
+
+    <label>Tipo de vehículo:</label>
+    <select name="tipo de vehículo" required>
+      <option value="carro">Carro</option>
+      <option value="moto">Moto</option>
+      <option value="moto eléctrica">Moto Eléctrica</option>
+      <option value="bicicleta">Bicicleta</option>
+      <option value="patineta eléctrica">Patineta Eléctrica</option>
+    </select>
+
+    <label>Tipo de usuario:</label>
+    <select name="tipo_usuario" required>
+      <option value="estudiante">Estudiante</option>
+      <option value="docente">Docente</option>
+    </select>
+
+    <button type="submit">Ingresar vehículo</button>
+  </form>
+
+  <table>
+    <tr>
+      <th>Nombre</th>
+      <th>Apellido</th>
+      <th>Tipo</th>
+      <th>Placa</th>
+      <th>Hora Inicio</th>
+      <th>Hora Fin</th>
+      <th>Tipo Usuario</th>
+      <th>Total</th>
+      <th>QR</th>
+      <th>Acciones</th>
+    </tr>
+    {% for uid, info in parqueadero.items() %}
+    <tr>
+      <td>{{ info.nombre }}</td>
+      <td>{{ info.apellido }}</td>
+      <td>{{ info.tipo }}</td>
+      <td>{{ info.placa }}</td>
+      <td>{{ info.hora_inicio }}</td>
+      <td>{{ info.hora_fin if info.hora_fin else '-' }}</td>
+      <td>{{ info.tipo_usuario }}</td>
+      <td>{{ info.total}}</td>
+      <td>
+        {% if info.qr %}
+          <img src="{{ url_for('static', filename=info.qr.split('/')[-1]) }}" width="60">
+        {% endif %}
+      </td>
+      <td class="acciones">
+        {% if not info.hora_fin %}
+          <a href="/salir/{{ uid }}">Salir</a>
+        {% endif %}
+        <a href="/editar/{{ uid }}">Editar</a>
+        <a href="/eliminar/{{ uid }}">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <p><a href="/historial">Ver historial</a> |
+     <a href="/reporte">Descargar reporte</a> |
+     <a href="/logout">Cerrar sesión</a></p>
+</body>
+</html>
