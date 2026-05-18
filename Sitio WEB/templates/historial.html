@@ -2,65 +2,118 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Historial de Parqueadero</title>
+  <title>Historial – Parqueadero</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      padding: 2rem;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; }
+
+    nav {
+      background: #1a237e; color: #fff; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; box-shadow: 0 2px 8px rgba(0,0,0,.2);
     }
-    h1 {
-      text-align: center;
-      color: #333;
+    nav .brand { font-size: 1.1rem; font-weight: 700; }
+    nav a { color: #c5cae9; text-decoration: none; font-size: .9rem; }
+    nav a:hover { color: #fff; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 28px 20px; }
+
+    .card {
+      background: #fff; border-radius: 14px; padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      overflow: hidden;
+    h2 { color: #1a237e; margin-bottom: 20px; font-size: 1.2rem; }
+
+    .summary {
+      display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
     }
-    th, td {
-      padding: 12px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
+    .stat {
+      background: #e3f2fd; border-radius: 10px; padding: 14px 20px;
+      text-align: center; flex: 1; min-width: 140px;
     }
-    th {
-      background-color: #e0e0e0;
+    .stat .num { font-size: 1.6rem; font-weight: 700; color: #1565c0; }
+    .stat .lbl { font-size: .8rem; color: #555; margin-top: 2px; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    thead th {
+      background: #1a237e; color: #fff; padding: 10px 12px;
+      text-align: left; font-weight: 600;
     }
+    tbody tr { border-bottom: 1px solid #eee; }
+    tbody tr:hover { background: #f5f8ff; }
+    td { padding: 9px 12px; vertical-align: middle; }
+
+    .badge {
+      display: inline-block; font-size: .72rem; padding: 2px 8px;
+      border-radius: 99px; font-weight: 600;
+    }
+    .badge-blue { background: #e3f2fd; color: #1565c0; }
+    .total-cell { font-weight: 700; color: #2e7d32; }
+
+    .empty { text-align: center; padding: 48px; color: #aaa; }
+    .back-btn {
+      display: inline-block; margin-top: 20px; padding: 10px 20px;
+      background: #1565c0; color: #fff; border-radius: 8px;
+      text-decoration: none; font-weight: 600; font-size: .9rem;
+    }
+    .back-btn:hover { background: #0d47a1; }
   </style>
 </head>
 <body>
-  <h1>Historial de Vehículos</h1>
+<nav>
+  <div class="brand">🅿️ Parqueadero</div>
+  <a href="/panel">← Volver al panel</a>
+</nav>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Placa</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Tipo</th>
-        <th>Entrada</th>
-        <th>Salida</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in historial %}
-      <tr>
-        <td>{{ item.placa }}</td>
-        <td>{{ item.nombre }}</td>
-        <td>{{ item.apellido }}</td>
-        <td>{{ item['tipo de vehículo'] }}</td>
-        <td>{{ item['hora Inicio'] }}</td>
-        <td>{{ item['hora Fin'] }}</td>
-        <td>${{ item.total }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<main>
+  <div class="card">
+    <h2>📋 Historial de vehículos</h2>
 
-  <p><a href="/panel">← Volver al Panel</a></p>
+    {% if historial %}
+    <div class="summary">
+      <div class="stat">
+        <div class="num">{{ historial|length }}</div>
+        <div class="lbl">Vehículos atendidos</div>
+      </div>
+      <div class="stat">
+        <div class="num">${{ '{:,}'.format(historial|sum(attribute='total')) }}</div>
+        <div class="lbl">Recaudado total</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Placa</th><th>Nombre</th><th>Apellido</th>
+            <th>Tipo vehículo</th><th>Entrada</th><th>Salida</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in historial %}
+          <tr>
+            <td><strong>{{ item.placa or '—' }}</strong></td>
+            <td>{{ item.nombre }}</td>
+            <td>{{ item.apellido }}</td>
+            <td><span class="badge badge-blue">{{ item['tipo de vehículo'] }}</span></td>
+            <td>{{ item['hora Inicio'] }}</td>
+            <td>{{ item['hora Fin'] }}</td>
+            <td class="total-cell">${{ '{:,}'.format(item.total) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty">
+      <p style="font-size:2.5rem;margin-bottom:12px;">📭</p>
+      <p>Aún no hay registros de salida en esta sesión.</p>
+    </div>
+    {% endif %}
+
+    <a href="/panel" class="back-btn">← Volver al panel</a>
+  </div>
+</main>
 </body>
 </html>
