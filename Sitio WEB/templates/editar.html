@@ -2,51 +2,80 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Editar Vehículo</title>
+  <title>Editar Vehículo – Parqueadero</title>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f7f9fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background: #eef2f7;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
     }
-    form {
-      background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    .card {
+      background: #fff; border-radius: 16px; padding: 36px 32px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.1); width: 100%; max-width: 500px;
     }
-    input, select, button {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+    h2 { color: #1a237e; margin-bottom: 24px; font-size: 1.3rem; }
+    label { display: block; font-size: .8rem; font-weight: 600; color: #555; margin-bottom: 5px; margin-top: 14px; }
+    input[type="text"], select {
+      width: 100%; padding: 10px 13px; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: .95rem; transition: border-color .2s;
     }
-    button {
-      background-color: #0052cc;
-      color: white;
-      border: none;
+    input:focus, select:focus { outline: none; border-color: #1565c0; }
+    .btns { display: flex; gap: 12px; margin-top: 28px; }
+    .btn {
+      flex: 1; padding: 12px; border: none; border-radius: 8px;
+      font-size: .95rem; font-weight: 600; cursor: pointer; text-align: center;
+      text-decoration: none; transition: background .2s;
+    }
+    .btn-primary { background: #1565c0; color: #fff; }
+    .btn-primary:hover { background: #0d47a1; }
+    .btn-secondary { background: #eee; color: #333; }
+    .btn-secondary:hover { background: #ddd; }
+    .tag {
+      display: inline-block; background: #e3f2fd; color: #1565c0;
+      font-size: .78rem; padding: 3px 10px; border-radius: 99px;
+      font-weight: 600; margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <form method="POST">
-    <h2>Editar vehículo</h2>
-    <label>Tipo:</label>
-    <select name="tipo">
-      <option>carro</option>
-      <option>moto</option>
-      <option>moto eléctrica</option>
-      <option>bicicleta</option>
-      <option>patineta eléctrica</option>
-    </select>
-    <label>Placa:</label>
-    <input type="text" name="placa" value="{{ datos.placa }}">
-    <button type="submit">Guardar cambios</button>
-  </form>
+  <div class="card">
+    <h2>✏️ Editar vehículo</h2>
+    <span class="tag">ID: {{ uid }}</span>
+
+    <form method="POST">
+      <label>Tipo de vehículo</label>
+      <select name="tipo">
+        {% for opcion in ['carro','moto','moto eléctrica','bicicleta','patineta eléctrica'] %}
+          <option value="{{ opcion }}" {% if datos.tipo == opcion %}selected{% endif %}>{{ opcion|capitalize }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Placa</label>
+      <input type="text" name="placa" value="{{ datos.placa }}" style="text-transform:uppercase;">
+
+      <label>Nombre</label>
+      <input type="text" name="nombre" value="{{ datos.nombre }}" required>
+
+      <label>Apellido</label>
+      <input type="text" name="apellido" value="{{ datos.apellido }}" required>
+
+      <label>Tipo de usuario</label>
+      <select name="tipo_usuario">
+        <option value="estudiante" {% if datos.tipo_usuario == 'estudiante' %}selected{% endif %}>🎓 Estudiante</option>
+        <option value="docente"    {% if datos.tipo_usuario == 'docente'    %}selected{% endif %}>👨‍🏫 Docente</option>
+      </select>
+
+      <label>Total mes</label>
+      <input type="text" name="total_mes" value="{{ datos.total_mes }}">
+
+      <div class="btns">
+        <button type="submit" class="btn btn-primary">💾 Guardar cambios</button>
+        <a href="/panel" class="btn btn-secondary">↩️ Cancelar</a>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
